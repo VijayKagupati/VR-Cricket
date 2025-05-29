@@ -132,6 +132,7 @@ public class GameManager : MonoBehaviour
 
         if (bowlerAnimator != null)
         {
+            ResetWicketTransforms();
             ThrowBall();
             Debug.Log("Bowler started running");
         }
@@ -144,8 +145,6 @@ public class GameManager : MonoBehaviour
     public void ThrowBall()
     {
         if (!gameActive || playInProgress) return;
-
-        ResetWicketTransforms();
         playInProgress = true;
 
         if (bowlerAnimator != null)
@@ -301,47 +300,10 @@ public class GameManager : MonoBehaviour
 
     private void ResetWicketTransforms()
     {
-        if (_wickets == null || _wickets.Length == 0 || _wicketTransforms == null || _wicketTransforms.Length != _wickets.Length)
-        {
-            Debug.LogError("Wicket array configuration issue");
-            return;
-        }
-
         for (int i = 0; i < _wickets.Length; i++)
         {
-            if (_wickets[i] == null || _wicketTransforms[i] == null) 
-            {
-                Debug.LogWarning($"Wicket at index {i} is not assigned!");
-                continue;
-            }
-        
-            // Get rigidbody first to handle physics
-            Rigidbody rb = _wickets[i].GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                // Temporarily disable physics to prevent collision during repositioning
-                bool wasKinematic = rb.isKinematic;
-                rb.isKinematic = true;
-            
-                // Reset position and rotation
-                _wickets[i].transform.position = _wicketTransforms[i].position;
-                _wickets[i].transform.rotation = _wicketTransforms[i].rotation;
-            
-                // Reset physics state completely
-                rb.velocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
-                rb.ResetInertiaTensor();
-                rb.Sleep();
-            
-                // Restore original kinematic state
-                rb.isKinematic = wasKinematic;
-            }
-            else
-            {
-                // If no rigidbody, just reset transform
-                _wickets[i].transform.position = _wicketTransforms[i].position;
-                _wickets[i].transform.rotation = _wicketTransforms[i].rotation;
-            }
+            _wickets[i].transform.position = _wicketTransforms[i].position;
+            _wickets[i].transform.rotation = _wicketTransforms[i].rotation;
         }
     }
 
