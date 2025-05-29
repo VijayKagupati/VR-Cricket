@@ -15,10 +15,7 @@ public class CricketBallThrower : MonoBehaviour
     public float forceVariation = 1.5f;
     public float directionVariation = 5f;
     public float spinIntensity = 0.5f;
-    
-    /// <summary>
-    /// Call this method when the character's throw animation reaches the release point
-    /// </summary>
+
     public void ThrowBall()
     {
         // Create ball at spawn position

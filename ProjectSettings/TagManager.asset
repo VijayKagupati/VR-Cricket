@@ -3,7 +3,25 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - SamplesInfoPanel
+  - QDSUITooltip
+  - QDSUIToggleButton
+  - QDSUITextSecondaryColor
+  - QDSUIIcon
+  - QDSUIBackplateGradient
+  - QDSUIToggleBorderlessButton
+  - QDSUISection
+  - QDSUISecondaryButton
+  - QDSUIAccentColor
+  - QDSUIToggleSwitch
+  - QDSUISharedThemeColor
+  - QDSUIBorderlessButton
+  - Ground
+  - QDSUITextSecondaryInvertedColor
+  - QDSUITextInvertedColor
+  - Wickets
+  - Bat
   layers:
   - Default
   - TransparentFX
@@ -11,7 +29,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Bat
   - 
   - 
   - 
