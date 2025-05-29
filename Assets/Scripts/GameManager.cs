@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     [Header("Game References")]
     [SerializeField] private Animator bowlerAnimator;
     [SerializeField] private ScoringSystem scoringSystem;
+    [SerializeField] private AnimationsController animationsController;
 
     [Header("UI Elements")]
     [SerializeField] private GameObject fourUI;
@@ -72,6 +73,7 @@ public class GameManager : MonoBehaviour
         currentOver = 0;
         ballsInOver = 0;
         OnGameStarted?.Invoke();
+        animationsController?.gameStart();
         Debug.Log("Cricket game started!");
         UpdateMatchDisplay();
 
@@ -92,9 +94,16 @@ public class GameManager : MonoBehaviour
         if (gameResultText != null)
         {
             if (isWin)
+            {
                 gameResultText.text = "You Win!\nScore: " + scoringSystem.GetScore();
+                animationsController?.gameWin();
+            }
+
             else
+            {
                 gameResultText.text = "Game Over!\nWickets: " + scoringSystem.GetWickets() + "/" + maxWickets;
+                animationsController?.gameLose();
+            }
         }
         
         ShowUI(gameOverUI);
@@ -159,10 +168,12 @@ public class GameManager : MonoBehaviour
         if (runs == 4)
         {
             ShowUI(fourUI);
+            animationsController?.four();
         }
         else if (runs == 6)
         {
             ShowUI(sixUI);
+            animationsController?.six();
         }
         else
         {
@@ -174,6 +185,7 @@ public class GameManager : MonoBehaviour
     private void HandleWicketHit()
     {
         ShowUI(outUI);
+        animationsController?.wicket();
         CompletePlay();
     }
 
@@ -291,20 +303,44 @@ public class GameManager : MonoBehaviour
     {
         if (_wickets == null || _wickets.Length == 0 || _wicketTransforms == null || _wicketTransforms.Length != _wickets.Length)
         {
-            Debug.LogError("_wickets == null || _wickets.Length == 0 || _wicketTransforms == null || _wicketTransforms.Length != _wickets.Length");
+            Debug.LogError("Wicket array configuration issue");
             return;
         }
 
         for (int i = 0; i < _wickets.Length; i++)
         {
-            if (_wickets[i] != null && _wicketTransforms != null)
+            if (_wickets[i] == null || _wicketTransforms[i] == null) 
             {
+                Debug.LogWarning($"Wicket at index {i} is not assigned!");
+                continue;
+            }
+        
+            // Get rigidbody first to handle physics
+            Rigidbody rb = _wickets[i].GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                // Temporarily disable physics to prevent collision during repositioning
+                bool wasKinematic = rb.isKinematic;
+                rb.isKinematic = true;
+            
+                // Reset position and rotation
                 _wickets[i].transform.position = _wicketTransforms[i].position;
                 _wickets[i].transform.rotation = _wicketTransforms[i].rotation;
+            
+                // Reset physics state completely
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.ResetInertiaTensor();
+                rb.Sleep();
+            
+                // Restore original kinematic state
+                rb.isKinematic = wasKinematic;
             }
             else
             {
-                Debug.LogWarning($"Wicket at index {i} is not assigned!");
+                // If no rigidbody, just reset transform
+                _wickets[i].transform.position = _wicketTransforms[i].position;
+                _wickets[i].transform.rotation = _wicketTransforms[i].rotation;
             }
         }
     }

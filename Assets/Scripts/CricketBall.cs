@@ -5,19 +5,8 @@ public class CricketBall : MonoBehaviour
     private bool hasBounced = false;
     private bool hasHitWicket = false;
     private bool hasBeenScored = false;
-    private bool hasBeenHitByBat = false;  // New property to track bat contact
-    private Rigidbody rb;
+    private bool hasBeenHitByBat = false;
     [SerializeField] private float _lifeTime = 10f;
-    
-    private void Start()
-    {
-        Destroy(gameObject, _lifeTime);
-    }
-
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -31,8 +20,16 @@ public class CricketBall : MonoBehaviour
         if (collision.gameObject.CompareTag("Wickets"))
         {
             hasHitWicket = true;
-        }
         
+            // Immediately notify scoring system about the wicket hit
+            ScoringSystem scoringSystem = FindObjectOfType<ScoringSystem>();
+            if (scoringSystem != null && !hasBeenScored)
+            {
+                hasBeenScored = true;
+                scoringSystem?.RegisterWicketHit(this);  // Add null conditional operator
+            }
+        }
+
         // Check if this collision is with the bat
         if (collision.gameObject.CompareTag("Bat"))
         {
@@ -49,7 +46,7 @@ public class CricketBall : MonoBehaviour
     {
         return hasHitWicket;
     }
-    
+
     public bool HasBeenHitByBat()
     {
         return hasBeenHitByBat;
@@ -64,4 +61,21 @@ public class CricketBall : MonoBehaviour
     {
         return hasBeenScored;
     }
+
+    private void Update()
+    {
+        _lifeTime -= Time.deltaTime;
+        if (_lifeTime <= 0 && !hasBeenScored)
+        {
+            MarkAsScored();
+
+            ScoringSystem scoringSystem = FindObjectOfType<ScoringSystem>();
+            if (scoringSystem != null)
+            {
+                scoringSystem.OnBoundaryHit?.Invoke(0);
+            }
+            Destroy(gameObject);
+        }
+    }
+
 }

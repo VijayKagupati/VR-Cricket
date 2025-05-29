@@ -61,16 +61,8 @@ public class ScoringSystem : MonoBehaviour
         if (ball != null && !ball.HasBeenScored())
         {
             ball.MarkAsScored();
-
-            // Check if wicket was hit (out)
-            if (ball.HasHitWicket())
-            {
-                wicketsTaken++;
-                OnWicketHit?.Invoke();
-                Debug.Log("OUT! Ball hit the wickets!");
-            }
             // Only score runs if ball was hit by bat
-            else if (ball.HasBeenHitByBat())
+            if (ball.HasBeenHitByBat())
             {
                 // Check if boundary was crossed with bat hit
                 if (ball.HasBouncedOnGround())
@@ -100,5 +92,14 @@ public class ScoringSystem : MonoBehaviour
                 Debug.Log("Ball missed, no runs awarded");
             }
         }
+    }
+    
+    public void RegisterWicketHit(CricketBall ball)
+    {
+        if (isGameOver) return;
+    
+        wicketsTaken++;
+        OnWicketHit?.Invoke();
+        Debug.Log("OUT! Ball hit the wickets!");
     }
 }

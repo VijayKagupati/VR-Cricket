@@ -16,6 +16,9 @@ public class CricketBallThrower : MonoBehaviour
     public float directionVariation = 5f;
     public float spinIntensity = 0.5f;
 
+    [Header("Audio")]
+    public AudioSource _audioSource;
+    [SerializeField] private AudioClip _throwSound;
     public void ThrowBall()
     {
         // Create ball at spawn position
@@ -65,5 +68,10 @@ public class CricketBallThrower : MonoBehaviour
         {
             ThrowBall();
         }
+    }
+
+    public void PlaySound()
+    {
+        _audioSource.PlayOneShot(_throwSound);
     }
 }
